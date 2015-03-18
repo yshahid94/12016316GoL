@@ -5,9 +5,6 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JSlider;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -22,14 +19,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 
 
-public class aFrame extends JFrame implements ActionListener, ComponentListener, ChangeListener{
+public class aFrame extends JFrame implements ActionListener, ComponentListener{
 
 	/**
 	 * 
@@ -38,11 +31,9 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener,
 
 	private JFileChooser fcOpen = new JFileChooser();
 	private JMenuBar menubar;
-	private JMenu fileMenu;
-	private JMenuItem  openItem, saveItem;
+	private JMenu fileMenu, sizeMenu, speedMenu, caMenu;
+	private JMenuItem  openItem, saveItem, smallItem, mediumItem, largeItem, slowItem, medItem, fastItem, hyperItem, GoLItem, plusItem, seedsItem;
 	private JButton playButton, stepButton, clearButton;
-	private JSlider sizeBar;
-	private Boolean playing = false;											//True while auto-generating
 	Life life = new Life();																//Sets up an instance of the JPanel containing Game of Life
 	
 	GridBagConstraints c = new GridBagConstraints();
@@ -56,7 +47,7 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener,
 		menubar = new JMenuBar();
 		this.setJMenuBar(menubar);
 		
-	    //Size Menu
+	    //File Menu
 		openItem = new JMenuItem("Open");
 		openItem.addActionListener
 		(new ActionListener()
@@ -78,12 +69,157 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener,
 			}
 		}
 		);
-	    			
+		
 		//Size Menu
+		smallItem = new JMenuItem("Small");
+		smallItem.addActionListener
+		(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				life.setCellSize(25);
+				life.resizeBoard(20);
+				resizeWindow();
+			}
+		}
+		);
+		
+		mediumItem = new JMenuItem("Medium");
+		mediumItem.addActionListener
+		(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				life.setCellSize(10);
+				life.resizeBoard(50);
+				resizeWindow();
+			}
+		}
+		);
+		
+		largeItem = new JMenuItem("Large");
+		largeItem.addActionListener
+		(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				life.setCellSize(5);
+				life.resizeBoard(100);
+				resizeWindow();
+			}
+		}
+		);
+		
+		//Speed Menu
+		slowItem = new JMenuItem("Slow");
+		slowItem.addActionListener
+		(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				life.setSpeed(1);
+				stopNStart();
+			}
+		}
+		);
+		
+		medItem = new JMenuItem("Medium");
+		medItem.addActionListener
+		(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				life.setSpeed(5);
+				stopNStart();
+			}
+		}
+		);
+		
+		fastItem = new JMenuItem("Fast");
+		fastItem.addActionListener
+		(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				life.setSpeed(20);
+				stopNStart();
+			}
+		}
+		);
+		
+		hyperItem = new JMenuItem("Hyper");
+		hyperItem.addActionListener
+		(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				life.setSpeed(100);
+				stopNStart();
+			}
+		}
+		);
+		
+		//CA Menu
+		GoLItem = new JMenuItem("GoL");
+		GoLItem.addActionListener
+		(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				life.setCAType(0);
+			}
+		}
+		);
+		
+		plusItem = new JMenuItem("Plus");
+		plusItem.addActionListener
+		(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				life.setCAType(1);
+			}
+		}
+		);
+		
+		seedsItem = new JMenuItem("Seeds");
+		seedsItem.addActionListener
+		(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				life.setCAType(2);
+			}
+		}
+		);
+	    			
+		//File Menu
 	    fileMenu = new JMenu("File");
   		menubar.add(fileMenu);
   		fileMenu.add(openItem);
   		fileMenu.add(saveItem);
+  		
+  		//Size Menu
+  		sizeMenu = new JMenu("Grid");
+  		menubar.add(sizeMenu);
+  		sizeMenu.add(smallItem);
+  		sizeMenu.add(mediumItem);
+  		sizeMenu.add(largeItem);
+  		
+  		//Speed Menu
+  		speedMenu = new JMenu("Speed");
+  		menubar.add(speedMenu);
+  		speedMenu.add(slowItem);
+  		speedMenu.add(medItem);
+  		speedMenu.add(fastItem);
+  		speedMenu.add(hyperItem);
+  		
+		//CA Menu
+  		caMenu = new JMenu("CA");
+  		menubar.add(caMenu);
+  		caMenu.add(GoLItem);
+  		caMenu.add(plusItem);
+  		caMenu.add(seedsItem);
   		
   		//Buttons
      	playButton = new JButton("Play");
@@ -95,15 +231,23 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener,
         clearButton = new JButton("Clear");
         clearButton.addActionListener(this);
         clearButton.setIcon(new ImageIcon("images/Clear.gif"));
-        sizeBar = new JSlider(JSlider.HORIZONTAL);
-        sizeBar.setValue(10);
-		sizeBar.addChangeListener(this);
-		sizeBar.setMinimum(10);
-		sizeBar.setMaximum(100);
-		
+        		
 		constructPanel();
 	}
-
+	
+	public void stopNStart(){
+		if(life.getPlaying()){
+			life.stopGenerating();
+			life.startGenerating();
+		}
+		else{}
+	}
+	
+	public void resizeWindow(){
+		int boardSize = (((life.getCellSize()+1)*life.getboardSize())+1);
+		super.setSize(boardSize + 20, boardSize + 100);
+	}
+	
 	public void constructPanel(){
 		//Panel Constructor
         //Top buttons
@@ -136,12 +280,11 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener,
 	    getContentPane().add(life, c);
 	    
 	    //Bottom buttons
-		c.weightx=1;
+		c.weightx=0.5;
 		c.weighty=0;
 		c.gridx=0;
 		c.gridy=2;
 		c.fill = GridBagConstraints.HORIZONTAL;
-		getContentPane().add(sizeBar,c);
 	}
 	
 	//File Handling
@@ -227,9 +370,7 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener,
 		        }
 				life.applyArray(cells);
 				
-				int boardSize = (((life.getCellSize()+1)*life.getboardSize())+1);
-				this.setSize(boardSize + 20, boardSize + 112);
-				sizeBar.setValue(life.getboardSize());
+				resizeWindow();
 				
 				opened = true;
 			}
@@ -242,14 +383,36 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener,
 		return opened;
 	}
 	
+	public void fixPlayButton(){
+		if (life.getPlaying()){
+			if(this.getWidth() >= 400){
+				playButton.setText("Pause");
+			}
+	        playButton.setIcon(new ImageIcon("images/Pause.gif"));
+		}
+		else{
+			if(this.getWidth() >= 400){
+				playButton.setText("Play");
+			}
+	        playButton.setIcon(new ImageIcon("images/Play.gif"));
+		}
+	}
+	
 	//Handlers
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		if ((e.getSource() == this.playButton))	{
-			if (playing.equals(false)){
-				playing = true;
+			if (life.getPlaying()){
+				
+				if(this.getWidth() >= 400){
+					playButton.setText("Play");
+				}
+		        playButton.setIcon(new ImageIcon("images/Play.gif"));
+				life.stopGenerating();
+			}
+			else{
 
 				if(this.getWidth() >= 400){
 					playButton.setText("Pause");
@@ -257,33 +420,21 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener,
 		        playButton.setIcon(new ImageIcon("images/Pause.gif"));
 				life.startGenerating();
 			}
-			else{
-				playing = false;
-				if(this.getWidth() >= 400){
-				playButton.setText("Play");
-				}
-		        playButton.setIcon(new ImageIcon("images/Play.gif"));
-				life.stopGenerating();
-			}
 		}
 	else if ((e.getSource() == this.stepButton))	{
-		if (playing.equals(false)){
-			life.generate();
-			life.repaint();
-		}
-		else{
-			playing = false;
-			if(this.getWidth() >= 400){
-				playButton.setText("Play");
-				}
-		        playButton.setIcon(new ImageIcon("images/Play.gif"));
+		if (life.getPlaying()){
 			life.stopGenerating();
 			life.generate();
-			life.repaint();
+			fixPlayButton();
 		}
+		else{
+			life.generate();
+		}
+		life.repaint();
 	}
 	else if ((e.getSource() == this.clearButton)){
 		life.clearBoard();
+		life.stopGenerating();
 	}
 }
 
@@ -296,7 +447,7 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener,
 			clearButton.setText("");
 		}
 		else{
-			if (playing){
+			if (life.getPlaying()){
 				playButton.setText("Pause");
 			}
 			else{
@@ -335,11 +486,5 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener,
 		
 	}
 
-	@Override
-	public void stateChanged(ChangeEvent e) {
-		// TODO Auto-generated method stub
-		life.resizeBoard(sizeBar.getValue());
-		int boardSize = (((life.getCellSize()+1)*life.getboardSize())+1);
-		this.setSize(boardSize + 20, boardSize + 112);
-	}
+	
 }

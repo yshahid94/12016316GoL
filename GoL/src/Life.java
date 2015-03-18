@@ -36,6 +36,8 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 	private int boardSize = 10;
 	private int speed = 10;												//The speed at which the automatic generations happen, 1 = 1fps, 2 = 2fps...etc
 	private Timer timer;
+	private int ca = 0;
+	private boolean playing = false;								//True while auto-generating
 	private boolean dragCell = false;
 		
 	Life(){
@@ -61,6 +63,22 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 			}
 		}
 		return cellsString;
+	}
+	
+	public boolean getPlaying(){
+		return playing;
+	}
+	
+	public void setPlaying(boolean playing){
+		this.playing = playing;
+	}
+	
+	public int getCAType(){
+		return ca;
+	}
+	
+	public void setCAType(int ca){
+		this.ca = ca;
 	}
 	
 	public int getCellSize(){
@@ -158,7 +176,7 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 		repaint();
 	}
 	
-	public boolean checkNeighbours (int x, int y){
+	public boolean checkGoLNeighbours (int x, int y){
 		int[][] neighboursArray= {
 				{-1,-1},	{0,-1},		{1,-1},
 				{-1,0},						{1,0},
@@ -199,6 +217,25 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 		else if (neighbours == 3){ return true;}
 		else return Cells[y][x];
 	}
+	
+	public boolean checkSeedsNeighbours (int x, int y){
+		int[][] neighboursArray= {
+				{-1,-1},	{0,-1},		{1,-1},
+				{-1,0},						{1,0},
+				{-	1,1},		{0,1},		{1,1}	
+		};
+		int neighbours = 0;
+		for (int[] i : neighboursArray){
+			try{
+				if ( Cells[y+i[0]][x+i[1]] == true)
+					neighbours++;
+            } catch(ArrayIndexOutOfBoundsException f){
+                continue;
+            }
+		}
+		if (neighbours == 2 && !Cells[y][x]){ return true;}
+		else return false;
+	}
 		
 	public void generate(){
 		boolean[][] tempCells = new boolean[boardSize][boardSize];
@@ -209,13 +246,22 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 		}
 		for (int i = 0; i < boardSize; i++){
 			for (int j = 0; j < boardSize; j++){
-			tempCells[i][j] = checkPlusNeighbours(j,i);
+				if (ca == 0){
+					tempCells[i][j] = checkGoLNeighbours(j,i);
+				}
+				else if (ca == 1){
+					tempCells[i][j] = checkPlusNeighbours(j,i);
+				}
+				else if (ca == 2){
+					tempCells[i][j] = checkSeedsNeighbours(j,i);
+				}
 			}
 		}
 		Cells = tempCells;
 	}
 	
 	public void startGenerating() {
+		playing = true;
 	    timer = new Timer();
 	    timer.schedule( new TimerTask(){
 	        public void run(){
@@ -226,7 +272,10 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 	}
 	
 	public void stopGenerating() {
-	   timer.cancel();
+		if (playing == true){
+			timer.cancel();
+			playing = false;
+		}
 	}
 
 	@Override
