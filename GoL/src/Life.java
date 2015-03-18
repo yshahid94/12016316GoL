@@ -68,7 +68,9 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 	
 	//Background Stuff
 	
-	
+	public boolean cellInBound(int xCell, int yCell){
+		return (yCell < boardSize && yCell >= 0 && xCell < boardSize && xCell >= 0);
+	}
 	
 	public void toggleCell (int x, int y){
 		if (Cells[y][x] == true){
@@ -164,9 +166,11 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
         int xCell = ms_xCord/(cellSize+1);
         int yCell = ms_yCord/(cellSize+1);
         
+        if (cellInBound(xCell,yCell)){
         toggleCell(xCell, yCell);
-        
         repaint();
+        }
+        
 		
 	}
 
@@ -178,52 +182,41 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
         
         int xCell = ms_xCord/(cellSize+1);
         int yCell = ms_yCord/(cellSize+1);
-        
-        if (Cells[yCell][xCell]){
-        	dragCell = false;
+
+        if (cellInBound(xCell,yCell)){
+	        if (Cells[yCell][xCell]){
+	        	dragCell = false;
+	        }
+	        else{
+	        	dragCell = true;
+	        }
         }
-        else{
-        	dragCell = true;
-        }
-		
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseReleased(MouseEvent e) {}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {}
 
 	@Override
-	public void mouseExited(MouseEvent e) {
-		System.out.println("hi");
-	}
+	public void mouseExited(MouseEvent e) {}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
 		int ms_xCord = e.getX();
         int ms_yCord = e.getY();
         
         int xCell = ms_xCord/(cellSize+1);
         int yCell = ms_yCord/(cellSize+1);
         
-        if (yCell < boardSize && yCell >= 0 && xCell < boardSize && xCell >= 0){
+        if (cellInBound(yCell,xCell)){
             Cells[yCell][xCell] = dragCell;
         }
-        
         repaint();
-		
 	}
 
 	@Override
-	public void mouseMoved(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void mouseMoved(MouseEvent e) {}
 	
 }
