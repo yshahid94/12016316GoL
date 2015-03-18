@@ -3,9 +3,11 @@ import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.File;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 
 
@@ -39,6 +41,26 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 	Life(){
 		addMouseListener(this);
 		addMouseMotionListener(this);
+	}
+	
+	public boolean[][] getCells(){
+		return Cells;
+	}
+	
+	public String getFormatedCells(){
+		String cellsString = "";
+		for (int i = 0 ; i < boardSize; i++){			//Going through the Y axis
+			for (int j = 0 ; j < boardSize; j++){		//Going through the X axis
+				cellsString += Boolean.toString(Cells[i][j]);
+				if (j == boardSize -1){
+					cellsString += ";\r\n";
+				}
+				else{
+					cellsString += ",";					
+				}
+			}
+		}
+		return cellsString;
 	}
 	
 	public int getCellSize(){
@@ -89,7 +111,7 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 	public int offsetcalc(int point){
 		return point+(cellSize*(point)+1);
 	}
-	
+		
 	//Background Stuff
 	
 	public boolean cellInBound(int xCell, int yCell){
@@ -112,6 +134,12 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 				}
 			}
 			repaint();
+	}
+	
+	public void applyArray(boolean Cells[][]){
+		boardSize = Cells[0].length;
+		this.Cells = Cells;
+		repaint();
 	}
 	
 	public void resizeBoard(int newSize){

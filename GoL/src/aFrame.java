@@ -1,5 +1,6 @@
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -14,6 +15,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 
 public class aFrame extends JFrame implements ActionListener, ComponentListener, ChangeListener{
@@ -22,10 +35,11 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener,
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
+	private JFileChooser fcOpen = new JFileChooser();
 	private JMenuBar menubar;
-	private JMenu sizeMenu;
-	private JMenuItem  smallItem, mediumItem, largeItem;
+	private JMenu fileMenu;
+	private JMenuItem  openItem, saveItem;
 	private JButton playButton, stepButton, clearButton;
 	private JSlider sizeBar;
 	private Boolean playing = false;											//True while auto-generating
@@ -43,45 +57,33 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener,
 		this.setJMenuBar(menubar);
 		
 	    //Size Menu
-	    smallItem = new JMenuItem("Small");
-	    smallItem.addActionListener
+		openItem = new JMenuItem("Open");
+		openItem.addActionListener
 		(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				life.resizeBoard(5);
+				openFile();
 			}
 		}
 		);
 	    
-	    mediumItem = new JMenuItem("Medium");
-	    mediumItem.addActionListener
+		saveItem = new JMenuItem("Save");
+		saveItem.addActionListener
 		(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				life.resizeBoard(15);
+				saveFile();
 			}
 		}
 		);
-	    
-	    largeItem = new JMenuItem("Large");
-	    largeItem.addActionListener
-		(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e)
-			{
-				life.resizeBoard(30);
-			}
-		}
-		);
-				
+	    			
 		//Size Menu
-		sizeMenu = new JMenu("Size");
-  		menubar.add(sizeMenu);
-  		sizeMenu.add(smallItem);
-  		sizeMenu.add(mediumItem);
-  		sizeMenu.add(largeItem);
+	    fileMenu = new JMenu("File");
+  		menubar.add(fileMenu);
+  		fileMenu.add(openItem);
+  		fileMenu.add(saveItem);
   		
   		//Buttons
      	playButton = new JButton("Play");
@@ -141,6 +143,106 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener,
 		c.fill = GridBagConstraints.HORIZONTAL;
 		getContentPane().add(sizeBar,c);
 	}
+	
+	//File Handling
+	
+	public void saveFile() {
+		int result = fcOpen.showSaveDialog(this);
+		if (result == JFileChooser.APPROVE_OPTION) {
+			File myfile = fcOpen.getSelectedFile();
+			
+			if (setStringToFile(myfile,life.getFormatedCells()))
+			super.setTitle("Single saved " + myfile.getAbsolutePath());
+		} else {
+			super.setTitle("Canceled file save");
+		}
+	}
+	public boolean setStringToFile(File file, String saveString)
+	{
+		boolean saved = false;
+		BufferedWriter bw = null;
+		try 
+		{
+			bw = new BufferedWriter(new FileWriter(file));
+			try
+			{
+				bw.write(saveString);
+				saved = true;
+			}
+			finally{bw.close();}
+		} 
+		catch (IOException ex) 
+		{
+			ex.printStackTrace();
+		}
+		return saved;
+	}
+	
+	public void openFile() {
+
+		int result = fcOpen.showOpenDialog(this);
+		if (result == JFileChooser.APPROVE_OPTION) {
+			File myfile = fcOpen.getSelectedFile();
+			try {
+				getCellsFromFile(myfile);
+				super.setTitle("opened " + myfile.getAbsolutePath());
+			} catch (Exception nfe) {
+				super.setTitle("An error occured during opening");
+			}
+		} else {
+			super.setTitle("Cancel file open");
+		}
+	}
+	public boolean getCellsFromFile(File file) {
+		boolean opened = false;
+		FileInputStream stream = null;
+		try {
+			stream = new FileInputStream(file);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		BufferedReader buff = new BufferedReader(new InputStreamReader(stream));
+		try 
+		{
+			
+			try
+			{
+				boolean[][] cells = null;
+				String line;
+		        int x = 0;
+		        int size = 0;
+
+		        while ((line = buff.readLine()) != null) {
+		            String[] cellLine = line.trim().split(",");
+
+		            if (cells == null) {
+		                size = cellLine.length;
+		                cells = new boolean[size][size];
+		            }
+		            for (int y = 0; y < size; y++) {
+		                cells[x][y] = Boolean.valueOf((cellLine[y]));
+		            }
+		            x++;
+		        }
+				life.applyArray(cells);
+				
+				int boardSize = (((life.getCellSize()+1)*life.getboardSize())+1);
+				this.setSize(boardSize + 20, boardSize + 112);
+				sizeBar.setValue(life.getboardSize());
+				
+				opened = true;
+			}
+			finally{buff.close(); stream.close();;}
+		} 
+		catch (IOException ex) 
+		{
+			ex.printStackTrace();
+		}
+		return opened;
+	}
+	
+	//Handlers
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
