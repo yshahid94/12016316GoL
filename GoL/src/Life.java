@@ -176,6 +176,25 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 		repaint();
 	}
 	
+	public boolean gridLoop(int x, int y){
+		int tempx = x, tempy = y;
+		if( x < 0){													//If trying to grab cell from left
+			tempx += (boardSize-1);
+		}
+		if(x >boardSize -1){								//If trying to grab cell from right
+			tempx -= (boardSize-1);
+		}
+		if(y < 0){												//If trying to grab cell from top
+			tempy += (boardSize-1);
+		}
+		if(y > boardSize -1){								//If trying to grab cell from bottom
+			tempy -= (boardSize-1);
+		}
+		System.out.println("hi");
+		boolean test = Cells[tempx][tempy];
+		return Cells[tempx][tempy];
+	}
+	
 	public boolean checkGoLNeighbours (int x, int y){
 		int[][] neighboursArray= {
 				{-1,-1},	{0,-1},		{1,-1},
@@ -185,15 +204,18 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 		int neighbours = 0;
 		for (int[] i : neighboursArray){
 			try{
-				if ( Cells[y+i[0]][x+i[1]] == true)
+				if ( Cells[x+i[0]][y+i[1]] == true)
 					neighbours++;
             } catch(ArrayIndexOutOfBoundsException f){
+            	if (gridLoop(x+i[0],y+i[1])){
+            		neighbours++;
+            		}
                 continue;
             }
 		}
 		if (neighbours < 2 || neighbours > 3 ){ return false;}
 		else if (neighbours == 3){ return true;}
-		else return Cells[y][x];
+		else return Cells[x][y];
 	}
 	
 	public boolean checkPlusNeighbours (int x, int y){
@@ -207,15 +229,18 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 		int neighbours = 0;
 		for (int[] i : neighboursArray){
 			try{
-				if ( Cells[y+i[0]][x+i[1]] == true)
+				if ( Cells[x+i[0]][y+i[1]] == true)
 					neighbours++;
             } catch(ArrayIndexOutOfBoundsException f){
-                continue;
+            	if (gridLoop(x+i[0],y+i[1])){
+            		neighbours++;
+            		}
+            	continue;
             }
 		}
 		if (neighbours < 2 || neighbours > 3 ){ return false;}
 		else if (neighbours == 3){ return true;}
-		else return Cells[y][x];
+		else return Cells[x][y];
 	}
 	
 	public boolean checkSeedsNeighbours (int x, int y){
@@ -227,13 +252,16 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 		int neighbours = 0;
 		for (int[] i : neighboursArray){
 			try{
-				if ( Cells[y+i[0]][x+i[1]] == true)
+				if ( Cells[x+i[0]][y+i[1]] == true)
 					neighbours++;
             } catch(ArrayIndexOutOfBoundsException f){
+            	if (gridLoop(x+i[0],y+i[1])){
+            		neighbours++;
+            		}
                 continue;
             }
 		}
-		if (neighbours == 2 && !Cells[y][x]){ return true;}
+		if (neighbours == 2 && !Cells[x][y]){ return true;}
 		else return false;
 	}
 		
@@ -247,13 +275,13 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 		for (int i = 0; i < boardSize; i++){
 			for (int j = 0; j < boardSize; j++){
 				if (ca == 0){
-					tempCells[i][j] = checkGoLNeighbours(j,i);
+					tempCells[i][j] = checkGoLNeighbours(i,j);
 				}
 				else if (ca == 1){
-					tempCells[i][j] = checkPlusNeighbours(j,i);
+					tempCells[i][j] = checkPlusNeighbours(i,j);
 				}
 				else if (ca == 2){
-					tempCells[i][j] = checkSeedsNeighbours(j,i);
+					tempCells[i][j] = checkSeedsNeighbours(i,j);
 				}
 			}
 		}
