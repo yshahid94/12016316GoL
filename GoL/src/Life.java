@@ -30,9 +30,9 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 			{false,false,false,false,false,false,false,false,false,false},
 			{false,false,false,false,false,false,false,false,false,false}
 		};	
-	private int cellSize = 20;
+	private int cellSize = 5;
 	private int boardSize = 10;
-	private int speed = 5;												//The speed at which the automatic generations happen, 1 = 1fps, 2 = 2fps...etc
+	private int speed = 10;												//The speed at which the automatic generations happen, 1 = 1fps, 2 = 2fps...etc
 	private Timer timer;
 	private boolean dragCell = false;
 		
@@ -149,6 +149,28 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 		else if (neighbours == 3){ return true;}
 		else return Cells[y][x];
 	}
+	
+	public boolean checkPlusNeighbours (int x, int y){
+		int[][] neighboursArray= {
+												{0,-2},
+												{0,-1},
+				{-2,0},		{-1,0},						{1,0},		{2,0},
+												{0,1}	,
+												{0,2}
+		};
+		int neighbours = 0;
+		for (int[] i : neighboursArray){
+			try{
+				if ( Cells[y+i[0]][x+i[1]] == true)
+					neighbours++;
+            } catch(ArrayIndexOutOfBoundsException f){
+                continue;
+            }
+		}
+		if (neighbours < 2 || neighbours > 3 ){ return false;}
+		else if (neighbours == 3){ return true;}
+		else return Cells[y][x];
+	}
 		
 	public void generate(){
 		boolean[][] tempCells = new boolean[boardSize][boardSize];
@@ -159,7 +181,7 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 		}
 		for (int i = 0; i < boardSize; i++){
 			for (int j = 0; j < boardSize; j++){
-			tempCells[i][j] = checkNeighbours(j,i);
+			tempCells[i][j] = checkPlusNeighbours(j,i);
 			}
 		}
 		Cells = tempCells;

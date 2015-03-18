@@ -203,12 +203,16 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener,
 			stepButton.setText("Step");
 			clearButton.setText("Clear");
 		}
-		int maxSize = life.getWidth();
-		if (life.getHeight() > life.getWidth()){
-			maxSize =life.getHeight();
-		}
-
-		life.resizeBoard((maxSize-1)/(life.getCellSize()+1));
+		System.out.println("Width");
+		System.out.println("Frame: "+ this.getWidth());
+		System.out.println("Panel: "+ life.getWidth());
+		System.out.println("Difference: "+ ( this.getWidth() - life.getWidth()));
+		
+		System.out.println("Height");
+		System.out.println("Frame: "+ this.getHeight());
+		System.out.println("Panel: "+ life.getHeight());
+		System.out.println("Difference: "+ ( this.getHeight() - life.getHeight()));
+		
 	}
 
 	@Override
@@ -233,5 +237,7 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener,
 	public void stateChanged(ChangeEvent e) {
 		// TODO Auto-generated method stub
 		life.resizeBoard(sizeBar.getValue());
+		int boardSize = (((life.getCellSize()+1)*life.getboardSize())+1);
+		this.setSize(boardSize + 20, boardSize + 112);
 	}
 }
