@@ -1,19 +1,15 @@
- import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JTextArea;
-import javax.swing.border.Border;
 
-import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 
-public class aFrame extends JFrame {
+public class aFrame extends JFrame{
 
 	/**
 	 * 
@@ -22,10 +18,10 @@ public class aFrame extends JFrame {
 	
 
 	private JMenuBar menubar;
-	private JMenu fileMenu;
-	private JMenuItem playItem, stepItem, clearItem;
-	private Boolean playing = false;
-	Life life = new Life();
+	private JMenu fileMenu, sizeMenu;
+	private JMenuItem playItem, stepItem, clearItem, smallItem, mediumItem, largeItem;
+	private Boolean playing = false;											//True while auto-generating
+	Life life = new Life();																//Sets up an instance of the JPanel containing Game of Life
 
 	GridBagConstraints c = new GridBagConstraints();
 	
@@ -35,6 +31,7 @@ public class aFrame extends JFrame {
 		menubar = new JMenuBar();
 		this.setJMenuBar(menubar);
 		
+		//File Menu
 		playItem = new JMenuItem("Start/Stop");
 	    playItem.addActionListener
 		(new ActionListener()
@@ -59,8 +56,17 @@ public class aFrame extends JFrame {
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				life.generate();
-				life.repaint();
+				if (playing.equals(false)){
+					life.generate();
+					life.repaint();
+				}
+				else{
+					playing = false;
+					life.stopGenerating();
+					life.generate();
+					life.repaint();
+				}
+				
 			}
 		}
 		);
@@ -71,7 +77,42 @@ public class aFrame extends JFrame {
 		{
 			public void actionPerformed(ActionEvent e)
 			{
-				//Code Here
+				life.clearBoard();
+			}
+		}
+		);
+	    
+	    
+	    //Size Menu
+	    smallItem = new JMenuItem("Small");
+	    smallItem.addActionListener
+		(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				life.resizeBoard(5);
+			}
+		}
+		);
+	    
+	    mediumItem = new JMenuItem("Medium");
+	    mediumItem.addActionListener
+		(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				life.resizeBoard(15);
+			}
+		}
+		);
+	    
+	    largeItem = new JMenuItem("Large");
+	    largeItem.addActionListener
+		(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				life.resizeBoard(30);
 			}
 		}
 		);
@@ -82,6 +123,13 @@ public class aFrame extends JFrame {
 		fileMenu.add(playItem);
 		fileMenu.add(stepItem);
 		fileMenu.add(clearItem);
+		
+		//Size Menu
+		sizeMenu = new JMenu("Size");
+  		menubar.add(sizeMenu);
+  		sizeMenu.add(smallItem);
+  		sizeMenu.add(mediumItem);
+  		sizeMenu.add(largeItem);
 			
 		//Panel Constructor
 		c.weightx=1;

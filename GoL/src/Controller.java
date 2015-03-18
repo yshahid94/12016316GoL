@@ -13,6 +13,6 @@ public class Controller {
 		f.setVisible(true);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setSize(300,300);
-		f.setResizable(false);
+//		f.setResizable(false);
 	}
 }
