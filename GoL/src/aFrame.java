@@ -4,6 +4,9 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -13,20 +16,19 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
 
-public class aFrame extends JFrame implements ActionListener, ComponentListener{
+public class aFrame extends JFrame implements ActionListener, ComponentListener, ChangeListener{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	
 	private JMenuBar menubar;
 	private JMenu sizeMenu;
 	private JMenuItem  smallItem, mediumItem, largeItem;
-	private JButton playButton, stepButton, settingsButton, clearButton;
+	private JButton playButton, stepButton, clearButton;
+	private JSlider sizeBar;
 	private Boolean playing = false;											//True while auto-generating
-	private Boolean settingsShowing = false;
 	Life life = new Life();																//Sets up an instance of the JPanel containing Game of Life
 	
 	GridBagConstraints c = new GridBagConstraints();
@@ -88,13 +90,15 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener{
         stepButton = new JButton("Step");
         stepButton.addActionListener(this);
         stepButton.setIcon(new ImageIcon("images/Step.gif"));
-        settingsButton = new JButton("Settings");
-        settingsButton.addActionListener(this);
-        settingsButton.setIcon(new ImageIcon("images/Settings.gif"));
         clearButton = new JButton("Clear");
         clearButton.addActionListener(this);
         clearButton.setIcon(new ImageIcon("images/Clear.gif"));
-  		
+        sizeBar = new JSlider(JSlider.HORIZONTAL);
+        sizeBar.setValue(10);
+		sizeBar.addChangeListener(this);
+		sizeBar.setMinimum(10);
+		sizeBar.setMaximum(100);
+		
 		constructPanel();
 	}
 
@@ -135,7 +139,7 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener{
 		c.gridx=0;
 		c.gridy=2;
 		c.fill = GridBagConstraints.HORIZONTAL;
-	    getContentPane().add(settingsButton, c);
+		getContentPane().add(sizeBar,c);
 	}
 	
 	@Override
@@ -187,7 +191,6 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener{
 		if(this.getWidth() < 400){
 			playButton.setText("");
 			stepButton.setText("");
-			settingsButton.setText("");
 			clearButton.setText("");
 		}
 		else{
@@ -198,9 +201,14 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener{
 				playButton.setText("Play");
 			}
 			stepButton.setText("Step");
-			settingsButton.setText("Settings");
 			clearButton.setText("Clear");
 		}
+		int maxSize = life.getWidth();
+		if (life.getHeight() > life.getWidth()){
+			maxSize =life.getHeight();
+		}
+
+		life.resizeBoard((maxSize-1)/(life.getCellSize()+1));
 	}
 
 	@Override
@@ -219,5 +227,11 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener{
 	public void componentHidden(ComponentEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		// TODO Auto-generated method stub
+		life.resizeBoard(sizeBar.getValue());
 	}
 }

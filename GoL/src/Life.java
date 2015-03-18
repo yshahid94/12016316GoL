@@ -41,6 +41,30 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 		addMouseMotionListener(this);
 	}
 	
+	public int getCellSize(){
+		return cellSize;
+	}
+	
+	public void setCellSize(int cellSize){
+		this.cellSize = cellSize;
+	}
+	
+	public int getboardSize(){
+		return boardSize;
+	}
+	
+	public void setBoardSize(int boardSize){
+		this.boardSize = boardSize;
+	}
+	
+	public int getSpeed(){
+		return speed;
+	}
+	
+	public void setSpeed(int speed){
+		this.speed = speed;
+	}
+	
 	/**
 	 * Handles all of the drawing onto the Panel
 	 */
@@ -106,11 +130,11 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 		repaint();
 	}
 	
-	public int checkNeighbours (int x, int y){
+	public boolean checkNeighbours (int x, int y){
 		int[][] neighboursArray= {
 				{-1,-1},	{0,-1},		{1,-1},
 				{-1,0},						{1,0},
-				{-	1,1},		{0,1},		{1,1}				
+				{-	1,1},		{0,1},		{1,1}	
 		};
 		int neighbours = 0;
 		for (int[] i : neighboursArray){
@@ -121,7 +145,9 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
                 continue;
             }
 		}
-		return neighbours;
+		if (neighbours < 2 || neighbours > 3 ){ return false;}
+		else if (neighbours == 3){ return true;}
+		else return Cells[y][x];
 	}
 		
 	public void generate(){
@@ -133,11 +159,7 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 		}
 		for (int i = 0; i < boardSize; i++){
 			for (int j = 0; j < boardSize; j++){
-			int neighbours = checkNeighbours(j,i);
-			
-			if (neighbours < 2 || neighbours > 3 ){ tempCells[i][j] = false;}
-			else if (neighbours == 3){tempCells[i][j] = true;}
-			else;
+			tempCells[i][j] = checkNeighbours(j,i);
 			}
 		}
 		Cells = tempCells;
