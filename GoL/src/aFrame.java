@@ -34,7 +34,7 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener{
 	private JMenu fileMenu, sizeMenu, speedMenu, caMenu;
 	private JMenuItem  openItem, saveItem, smallItem, mediumItem, largeItem, slowItem, medItem, fastItem, hyperItem, GoLItem, plusItem, seedsItem;
 	private JButton playButton, stepButton, clearButton;
-	Life life = new Life();																//Sets up an instance of the JPanel containing Game of Life
+	Life life = new Life(20,25);																//Sets up an instance of the JPanel containing Game of Life
 	
 	GridBagConstraints c = new GridBagConstraints();
 	
@@ -160,7 +160,7 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener{
 		);
 		
 		//CA Menu
-		GoLItem = new JMenuItem("GoL");
+		GoLItem = new JMenuItem("Conway's");
 		GoLItem.addActionListener
 		(new ActionListener()
 		{
@@ -171,7 +171,7 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener{
 		}
 		);
 		
-		plusItem = new JMenuItem("Plus");
+		plusItem = new JMenuItem("Neumann");
 		plusItem.addActionListener
 		(new ActionListener()
 		{
@@ -322,7 +322,6 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener{
 	}
 	
 	public void openFile() {
-
 		int result = fcOpen.showOpenDialog(this);
 		if (result == JFileChooser.APPROVE_OPTION) {
 			File myfile = fcOpen.getSelectedFile();
@@ -342,7 +341,6 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener{
 		try {
 			stream = new FileInputStream(file);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		BufferedReader buff = new BufferedReader(new InputStreamReader(stream));
@@ -402,7 +400,6 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener{
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
 		if ((e.getSource() == this.playButton))	{
 			if (life.getPlaying()){
 				
@@ -434,13 +431,15 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener{
 	}
 	else if ((e.getSource() == this.clearButton)){
 		life.clearBoard();
-		life.stopGenerating();
+		life.stopGenerating();		
+		if (!life.getPlaying()){
+			fixPlayButton();
+		}
 	}
 }
 
 	@Override
 	public void componentResized(ComponentEvent e) {
-		// TODO Auto-generated method stub
 		if(this.getWidth() < 400){
 			playButton.setText("");
 			stepButton.setText("");
@@ -455,36 +454,17 @@ public class aFrame extends JFrame implements ActionListener, ComponentListener{
 			}
 			stepButton.setText("Step");
 			clearButton.setText("Clear");
-		}
-		System.out.println("Width");
-		System.out.println("Frame: "+ this.getWidth());
-		System.out.println("Panel: "+ life.getWidth());
-		System.out.println("Difference: "+ ( this.getWidth() - life.getWidth()));
-		
-		System.out.println("Height");
-		System.out.println("Frame: "+ this.getHeight());
-		System.out.println("Panel: "+ life.getHeight());
-		System.out.println("Difference: "+ ( this.getHeight() - life.getHeight()));
-		
+		}		
 	}
 
 	@Override
-	public void componentMoved(ComponentEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void componentMoved(ComponentEvent e) {}
 
 	@Override
 	public void componentShown(ComponentEvent e) {
-		// TODO Auto-generated method stub
-		
+		resizeWindow();			//Resizes the window when program opens
 	}
 
 	@Override
-	public void componentHidden(ComponentEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	
+	public void componentHidden(ComponentEvent e) {}
 }

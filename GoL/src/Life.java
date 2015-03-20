@@ -3,11 +3,10 @@ import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.io.File;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 
 
@@ -44,6 +43,15 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 		addMouseListener(this);
 		addMouseMotionListener(this);
 	}
+	
+	Life(int boardSize, int cellSize){
+		addMouseListener(this);
+		addMouseMotionListener(this);
+		this.resizeBoard(boardSize);
+		this.setCellSize(cellSize);
+	}
+	
+	//Getters and Setters
 	
 	public boolean[][] getCells(){
 		return Cells;
@@ -105,6 +113,8 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 		this.speed = speed;
 	}
 	
+	//Display
+	
 	/**
 	 * Handles all of the drawing onto the Panel
 	 */
@@ -125,13 +135,13 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 			}
 		}
 	}
+
+	//Background
 	
 	public int offsetcalc(int point){
 		return point+(cellSize*(point)+1);
 	}
 		
-	//Background Stuff
-	
 	public boolean cellInBound(int xCell, int yCell){
 		return (yCell < boardSize && yCell >= 0 && xCell < boardSize && xCell >= 0);
 	}
@@ -181,17 +191,15 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 		if( x < 0){													//If trying to grab cell from left
 			tempx += (boardSize-1);
 		}
-		if(x >boardSize -1){								//If trying to grab cell from right
+		if(x >boardSize -1){									//If trying to grab cell from right
 			tempx -= (boardSize-1);
 		}
-		if(y < 0){												//If trying to grab cell from top
+		if(y < 0){														//If trying to grab cell from top
 			tempy += (boardSize-1);
 		}
-		if(y > boardSize -1){								//If trying to grab cell from bottom
+		if(y > boardSize -1){									//If trying to grab cell from bottom
 			tempy -= (boardSize-1);
 		}
-		System.out.println("hi");
-		boolean test = Cells[tempx][tempy];
 		return Cells[tempx][tempy];
 	}
 	
@@ -325,7 +333,6 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
 		int ms_xCord = e.getX();
         int ms_yCord = e.getY();
         
@@ -367,5 +374,4 @@ public class Life extends JPanel implements MouseListener, MouseMotionListener{
 
 	@Override
 	public void mouseMoved(MouseEvent e) {}
-	
 }
